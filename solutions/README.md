@@ -11,7 +11,6 @@ solutions/
     hidden_tests/                32 acceptance tests
   int_m2_bikemap/
     KEY_SOLUTION.md              the trap, expected outputs per part, graded edge cases
-    parts/                       spec parts 2-5 (+ extra data/scenario files) to hand out
     patches/part<k>.patch        reference solution after part k (reference.patch = part 5)
     hidden_tests/                51 acceptance tests, split by part (p1..p5)
 ```
@@ -41,14 +40,9 @@ and 32 hidden tests pass. BikeMap: 50 visible and 51 hidden tests pass through P
 ## Integration: BikeMap
 
 1. Before the round, read `KEY_SOLUTION.md` (10 min) and skim `../problems/int_m2_bikemap/DOCS.md`.
-2. Only Part 1 is in `SPEC.md`. When the candidate finishes a part (or you decide to move on),
-   hand them the next one. Either:
-   - run the bundled reveal script inside *their* working copy, pointing it at this folder:
-     ```bash
-     STRIPE_PREP_KEYS=/path/to/this/repo/solutions python reveal.py 2   # then 3, 4, 5
-     ```
-     It appends the part to `SPEC.md` and copies in that part's extra data and scenario files;
-   - or paste `parts/part<k>.md` into the chat and send them the files in `parts/part<k>_files/`.
+2. All 5 parts are already in `SPEC.md`, and their data and scenario files are already in the
+   folder, so there's nothing to hand out. Just keep the candidate working in order, and if
+   they jump ahead before a part is correct, ask them to finish it first.
 3. **Don't mention the lon/lat trap.** Catching it from `DOCS.md` is part of the evaluation. If
    they render in Part 2 without noticing, you can ask "how would you check the map was drawn
    in the right place?" once, and note that you did.
@@ -72,6 +66,5 @@ To see a reference solution yourself:
 
 ```bash
 cp -R problems/int_m2_bikemap /tmp/bike-ref && cd /tmp/bike-ref
-STRIPE_PREP_KEYS=<repo>/solutions python reveal.py 5
 git init -q && git apply <repo>/solutions/int_m2_bikemap/reference.patch
 ```

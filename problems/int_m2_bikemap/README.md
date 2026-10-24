@@ -20,9 +20,8 @@ pytest -q "tests/test_cli.py::test_health"
 pytest -q -k "some_name"           # tests whose names match
 pytest -q -s                       # show your print() output
 pytest -x --pdb                    # open the debugger at the first failure
-prep reveal                        # reveal the next part of SPEC.md (same as: python reveal.py <n>)
 prep time                          # minutes used vs the limit
-prep grade                         # when the timer is up: hidden acceptance tests for the parts you revealed
+prep grade                         # when the timer is up: hidden acceptance tests for the parts you finished
 prep reset int_m2_bikemap          # throw this attempt away and start over
 ```
 
@@ -90,8 +89,8 @@ before moving on.
 ## Rules
 
 - Do not edit the existing tests. Add your own tests for the code you write.
-- Only Part 1 is in `SPEC.md`. When you finish a part (or decide to stop it), run
-  `python reveal.py <n>` to append part `n` to `SPEC.md`; it may also add files.
+- All five parts are in `SPEC.md`. Do them in order and finish (or decide to stop)
+  one part before starting the next.
 - Use only the standard library plus what `requirements.txt` lists (no imaging
   libraries are needed: the API draws the image).
 - After the timer ends, grade your work with

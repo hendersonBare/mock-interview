@@ -9,9 +9,11 @@ There are AI generated notes included for you in the solutions folder. I won't r
 | Bug Squash | Mako template engine, 3 user-reported bugs | [`problems/rep_bug_squash_mako_3bugs`](problems/rep_bug_squash_mako_3bugs) | 60 min |
 | Integration | BikeMap: ride file → maps API → stats, 5 parts | [`problems/int_m2_bikemap`](problems/int_m2_bikemap) | 60 min |
 
-- `problems/` holds the untouched practice copies. This is exactly what the candidate gets.
+- `problems/` holds the practice copies. This is exactly what the candidate gets. They're
+  untouched, except that all 5 BikeMap parts are already in its `SPEC.md`, so you don't need
+  to hand them out.
 - `solutions/` is for the interviewer only: the answer keys, reference patches, hidden acceptance
-  tests, BikeMap parts 2 to 5, and a grading script. Start with
+  tests, and a grading script. Start with
   [`solutions/README.md`](solutions/README.md).
 
 > **Candidate:** stay out of `solutions/` until both rounds are graded.
@@ -52,8 +54,10 @@ The coding rounds are known for being **practical rather than LeetCode-style**
   from a GeoJSON file, call an authenticated map-rendering API and save the image, add
   start/end markers and alternating segment colors, find the nearest landmark to each point
   (paginated API), then compute elapsed time and speed.
-- The spec is revealed in 5 parts, like the real round, so you can see how the candidate
-  extends their own code under time pressure.
+- The spec has 5 parts that build on each other, like the real round, so you can see how the
+  candidate extends their own code under time pressure. In the real round each part is revealed
+  only after the previous one. Here they're all visible up front, but the candidate should still
+  do them in order.
 - The **lon/lat trap**, mentioned only in `DOCS.md`, is the classic "did you actually read the
   docs" check. Ride files are `[lon, lat]`, the API wants `[lat, lon]`, and the ride is in
   Amsterdam, so swapped values still look valid and fail silently.
@@ -89,5 +93,5 @@ rather than failing tests).
   costs a lot.
 - Stop when the timer ends.
 
-For interviewer mechanics (revealing BikeMap parts, hint ladders, grading commands), see
+For interviewer mechanics (hint ladders, grading commands), see
 [`solutions/README.md`](solutions/README.md).
