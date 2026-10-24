@@ -1,7 +1,8 @@
 # Stripe mock interview: Bug Squash + Integration
 
-Thanks for running this mock. This repo has everything you need to play the interviewer for two
-Stripe-style onsite rounds:
+Hey Eland, thanks so much for doing this! I have Stripe's virtual onsite on Tuesday and Wednesday. Tuesday will be Bug Squash + AI programming and Wednesday will be the "Integration" Round. Bug squash consists of running tests from a large repository and fixing those that are failing. I believe there are typically 3 bugs and I think you can pass after fixing just one. Integration is a similar structure, but involves adding/extending features instead of fixing bugs. Throughout our practice, I mostly want to focus on my abilities to communicate and operate under time constraints, as I will have more time TMRW afternoon and Monday to practice the tecnical aspects of the interview. 
+
+There are AI generated notes included for you in the solutions folder. I won't review them because the contain hints and solutions but they should be helpful for you to understand how I am *supposed* to approach/complete the exercises.
 
 | Round | Problem | Folder | Time |
 |---|---|---|---|
@@ -23,32 +24,22 @@ Stripe doesn't publish its full loop. What follows comes from Stripe's own engin
 guidance on the Bug Squash round and from many public candidate reports in 2025-2026. Details
 vary by team and level, and the recruiter confirms the actual loop.
 
-1. **Recruiter screen** (~30 min): background, motivation, logistics.
-2. **Technical phone screen** (~60 min): one practical, multi-part coding problem in your own
-   editor and language (parsing, data transformation, a small simulation). Parts get harder as
-   you go. Working, readable code matters more than tricky algorithms.
-3. **Virtual onsite**, usually 4 to 6 rounds of about 60 minutes each:
-   - **Programming / Coding:** another practical, multi-part problem, in the same style as the
-     screen.
+1. **Recruiter screen**
+2. **Technical team screen** (~60 min): was a multi part coding problem, easy in terms of algorithmic difficulty. completed 3/4 parts and was advanced to VO.
+3. **Virtual onsite**, 3 rounds 60 minutes each:
    - **Bug Squash (a.k.a. Bug Bash):** you get a real, unfamiliar codebase (often an open-source
      library) with failing tests and/or bug reports. You reproduce, localize, fix and verify,
      talking it through with the interviewer. There are often several bugs in unrelated areas.
-     Docs and the internet are allowed. AI assistants are reported to be off-limits.
+     Docs and the internet are allowed.
    - **Integration:** you build a feature against an unfamiliar HTTP API, working from its docs,
      inside an existing small codebase. The spec arrives in parts and most people finish about
      three. The usual skills tested are auth, pagination, error handling and retries, data
      transformation, and reading the docs carefully. Internet is allowed, AI is not.
-   - **System Design** (mid-level and up): an API or system design discussion, often
-     payments-flavored (idempotency, ledgers, webhooks, rate limiting).
-   - **Behavioral / Experience** (often with the hiring manager): past projects, ownership,
+   - **AI Programming Exercise** (their first year doing this, new grad candidates only I think): a coding round done *with* an AI assistant. It tests how well you steer, review and correct AI output. Should be pretty easy.
+4. **Hiring Manager Chat** deep dive on past projects, ownership,
      collaboration, and Stripe's operating principles.
-   - **AI Programming Exercise** (newer, not in every loop): a coding round done *with* an AI
-     assistant. It tests how well you steer, review and correct AI output.
-4. **Hiring committee / debrief:** each interviewer writes independent feedback with a score.
-   The packet is reviewed as a whole, then comes team matching and the offer.
 
-The coding rounds are known for being **practical rather than LeetCode-style**: you're expected
-to work in your own environment, with real tooling, in code you didn't write.
+The coding rounds are known for being **practical rather than LeetCode-style**
 
 ## 2. Why these two problems
 
@@ -59,10 +50,6 @@ to work in your own environment, with real tooling, in code you didn't write.
 - It has **three bugs in three unrelated subsystems** (AST regeneration, filesystem lookup,
   control-block codegen), each written up as a user report in `ISSUE.md`. Candidates often
   report "there were three issues", so it also tests prioritization under time pressure.
-- The bugs range from a 5-minute fix to a 20-minute one that requires reading generated code.
-  That spread separates "systematic debugger" from "got lucky".
-- Each fix is 1 to 3 lines. This rewards localizing over rewriting, which is the main lesson
-  from candidate post-mortems.
 
 **Integration → BikeMap.**
 - This is the **most frequently described Stripe integration problem shape**: read a bike ride
@@ -77,62 +64,6 @@ to work in your own environment, with real tooling, in code you didn't write.
 - Later parts add real-world API problems: 5xx and timeouts that need bounded retries (never
   retry 4xx), pagination tokens, malformed records, and bad timestamps.
 - It ships with a local mock API (`mock_map/`), so the problem runs fully offline.
-
-## 3. How grading likely works
-
-Stripe interviewers reportedly score each round against a fixed rubric. Each dimension gets a
-four-point rating, and the round gets an overall recommendation: **Strong No / No / Yes / Strong
-Yes** (no "neutral"). The written evidence matters as much as the score, so note specific
-moments ("found bug B in 6 min by walking up the stack trace", "swapped lat/lon in Part 2 and
-didn't catch it").
-
-Things Stripe is consistently reported to weigh in these practical rounds:
-- **Progress and correctness.** Working code beats clever code. A clean, correct partial
-  solution beats a rushed full one ("two of three bugs fixed cleanly and explained well beats
-  three rushed changes").
-- **Process.** Does the candidate reproduce before changing code, form a hypothesis, test it,
-  and confirm the fix?
-- **Communication.** Do they narrate their thinking, state assumptions, and react well to hints?
-- **Code quality.** Small, well-scoped changes, readable structure, sensible naming, tests
-  added for new code.
-- **Tooling fluency.** Running a single test, using a debugger or prints, `git diff`, and
-  reading tracebacks.
-
-### Scorecard: Bug Squash (Mako)
-
-Rate each 1 (Strong No) to 4 (Strong Yes).
-
-| Dimension | 4: Strong Yes | 2: No |
-|---|---|---|
-| Reproduction & localization | Runs the failing tests or `ISSUE.md` snippet first, narrows to one test, follows the traceback to the right file quickly | Reads code at random, edits before reproducing |
-| Hypothesis-driven debugging | States a hypothesis, picks an experiment to confirm or refute it (pdb, prints, `Template(...).code`) | Trial-and-error edits |
-| Fix quality | Minimal, root-cause fix (1-3 lines each), no test edits, explains *why* it's correct | Patches the symptom, broad rewrites, or edits tests |
-| Verification | Reruns the targeted test *and* the full suite, maybe adds a regression test | Declares done without running the suite |
-| Prioritization | Notices B is quick and does it first, timeboxes C | Sinks 40 min into one bug |
-| Communication | Clear running narration, crisp 1-2 sentence summary per fix | Silent or rambling |
-
-Rough anchors: **Strong Yes** = all 3 fixed with clear explanations. **Yes** = 2 fixed cleanly
-plus a sound plan for the third. **No** = 1 fixed or fixes not understood. **Strong No** = none,
-or tests edited.
-
-### Scorecard: Integration (BikeMap)
-
-| Dimension | 4: Strong Yes | 2: No |
-|---|---|---|
-| Reading the docs | Inspects the raw data and DOCS first, catches lon/lat, `X-Api-Key`, pagination limits, `Z` timestamps | Codes from SPEC alone, misses the coordinate swap |
-| Correctness on edge cases | Handles missing elevation, `null` times, ties, malformed records | Happy path only |
-| HTTP / API handling | Auth, binary PNG body written only on 2xx, bounded retries on 5xx/timeouts, no retry on 4xx, full pagination | Retries everything or nothing, ignores status codes |
-| Code structure | Small modules or functions, conversion at the boundary, reusable client across parts | One giant function, copy-paste between parts |
-| Testing | Adds focused tests, runs the suite often | No tests, never runs the suite |
-| Progress | Parts 1-3 solid, or more | Stuck in Part 1 or 2 |
-| Communication | Talks through trade-offs, asks clarifying questions | Silent |
-
-Rough anchors: **Strong Yes** = Parts 1-4 correct (including lon/lat), clean code, own tests.
-**Yes** = Parts 1-3 correct. **No** = Parts 1-2 with the coordinate swap uncaught, or
-untested. **Strong No** = Part 1 incomplete.
-
-The hidden acceptance tests in `solutions/` give you an objective correctness signal per part.
-Weigh them alongside the process dimensions above; don't use them alone.
 
 ## 4. Running the mock
 
@@ -153,9 +84,6 @@ python -m pytest -q                                    # Mako: expect 6 failed, 
 
 Same for BikeMap (`problems/int_m2_bikemap`, expect `45 passed`, since Part 1 is new code
 rather than failing tests).
-
-**Suggested schedule (~2.5 h):** 5 min setup check → 60 min Bug Squash → 10 min break → 60 min
-Integration → 15 min debrief using the scorecards.
 
 **Ground rules to give the candidate:**
 - Docs and the internet are fine. No AI assistants (matches reported Stripe rules for these
