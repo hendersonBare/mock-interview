@@ -20,10 +20,6 @@ There are AI generated notes included for you in the solutions folder. I won't r
 
 ## 1. Stripe's interview process
 
-Stripe doesn't publish its full loop. What follows comes from Stripe's own engineering
-guidance on the Bug Squash round and from many public candidate reports in 2025-2026. Details
-vary by team and level, and the recruiter confirms the actual loop.
-
 1. **Recruiter screen**
 2. **Technical team screen** (~60 min): was a multi part coding problem, easy in terms of algorithmic difficulty. completed 3/4 parts and was advanced to VO.
 3. **Virtual onsite**, 3 rounds 60 minutes each:
