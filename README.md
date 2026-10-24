@@ -2,7 +2,7 @@
 
 Hey Eland, thanks so much for doing this! I have Stripe's virtual onsite on Tuesday and Wednesday. Tuesday will be Bug Squash + AI programming and Wednesday will be the "Integration" Round. Bug squash consists of running tests from a large repository and fixing those that are failing. I believe there are typically 3 bugs and I think you can pass after fixing just one. Integration is a similar structure, but involves adding/extending features instead of fixing bugs. Throughout our practice, I mostly want to focus on my abilities to communicate and operate under time constraints, as I will have more time TMRW afternoon and Monday to practice the tecnical aspects of the interview. 
 
-There are AI generated notes included for you in the solutions folder. I won't review them because the contain hints and solutions but they should be helpful for you to understand how I am *supposed* to approach/complete the exercises.
+There are AI generated notes included for you in the solutions folder. I won't review them because they contain hints and solutions but they should be helpful for you to understand how I am *supposed* to approach/complete the exercises.
 
 | Round | Problem | Folder | Time |
 |---|---|---|---|
