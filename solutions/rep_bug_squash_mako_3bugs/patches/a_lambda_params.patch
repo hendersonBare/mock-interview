@@ -1,0 +1,14 @@
+diff --git a/mako/_ast_util.py b/mako/_ast_util.py
+index 385d7a0..fc077f2 100644
+--- a/mako/_ast_util.py
++++ b/mako/_ast_util.py
+@@ -524,9 +524,6 @@ class SourceGenerator(NodeVisitor):
+     def visit_NameConstant(self, node):
+         self.write(str(node.value))
+ 
+-    def visit_arg(self, node):
+-        self.write(node.arg)
+-
+     def visit_Str(self, node):
+         self.write(repr(node.s))
+ 

@@ -1,0 +1,13 @@
+diff --git a/mako/lookup.py b/mako/lookup.py
+index fae03af..548b227 100644
+--- a/mako/lookup.py
++++ b/mako/lookup.py
+@@ -247,7 +247,7 @@ class TemplateLookup(TemplateCollection):
+                 # on POSIX and cannot be used.
+                 dir_ = dir_.replace(os.path.sep, posixpath.sep)
+                 srcfile = posixpath.normpath(posixpath.join(dir_, u))
+-                if os.path.isfile(srcfile):
++                if os.path.exists(srcfile):
+                     return self._load(srcfile, uri)
+             else:
+                 raise exceptions.TopLevelLookupException(

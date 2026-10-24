@@ -1,0 +1,16 @@
+{
+  "landmarks_file": "data/landmarks_part4.json",
+  "faults": [
+    {
+      "path": "/v1/landmarks",
+      "delay": 3,
+      "times": 1
+    },
+    {
+      "path": "/v1/landmarks",
+      "after": 2,
+      "status": 500,
+      "times": 1
+    }
+  ]
+}

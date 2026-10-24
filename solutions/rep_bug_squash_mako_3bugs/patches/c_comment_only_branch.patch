@@ -1,0 +1,16 @@
+diff --git a/mako/codegen.py b/mako/codegen.py
+index b5293f4..b0c6cf1 100644
+--- a/mako/codegen.py
++++ b/mako/codegen.py
+@@ -855,10 +855,7 @@ class _GenerateRenderMethod:
+ 
+             if (
+                 not children
+-                or all(
+-                    isinstance(c, (parsetree.Comment, parsetree.ControlLine))
+-                    for c in children
+-                )
++                or all(isinstance(c, parsetree.ControlLine) for c in children)
+                 and all(
+                     (node.is_ternary(c.keyword) or c.isend)
+                     for c in children

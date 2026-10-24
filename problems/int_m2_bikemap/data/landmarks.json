@@ -1,0 +1,182 @@
+[
+  {
+    "id": "lm_001",
+    "name": "Pedestrian bridge 12",
+    "category": "bridge",
+    "coordinates": [52.379795, 4.882107]
+  },
+  {
+    "id": "lm_002",
+    "name": "Flower stall",
+    "category": "shop",
+    "coordinates": [52.358075, 4.901441]
+  },
+  {
+    "id": "lm_003",
+    "name": "Ferry pier West",
+    "category": "transit",
+    "coordinates": [52.373682, 4.891979]
+  },
+  {
+    "id": "lm_004",
+    "name": "Bike repair kiosk",
+    "category": "service",
+    "coordinates": [52.376012, 4.904606]
+  },
+  {
+    "id": "lm_005",
+    "name": "Public fountain",
+    "category": "park",
+    "coordinates": [52.380701, 4.893184]
+  },
+  {
+    "id": "lm_006",
+    "name": "Library annex",
+    "category": "culture",
+    "coordinates": [52.376788, 4.876758]
+  },
+  {
+    "id": "lm_007",
+    "name": "Water tower",
+    "category": "culture",
+    "coordinates": [52.360108, 4.891343]
+  },
+  {
+    "id": "lm_008",
+    "name": "Night market square",
+    "category": "shop",
+    "coordinates": [52.368097, 4.87979]
+  },
+  {
+    "id": "lm_009",
+    "name": "Rowing club",
+    "category": "culture",
+    "coordinates": [52.364119, 4.895944]
+  },
+  {
+    "id": "lm_010",
+    "name": "Old customs house",
+    "category": "culture",
+    "coordinates": [52.370169, 4.893858]
+  },
+  {
+    "id": "lm_011",
+    "name": "Sculpture garden",
+    "category": "park",
+    "coordinates": [52.369026, 4.886663]
+  },
+  {
+    "id": "lm_012",
+    "name": "Tram depot",
+    "category": "transit",
+    "coordinates": [52.361332, 4.888898]
+  },
+  {
+    "id": "lm_013",
+    "name": "Windmill replica",
+    "category": "culture",
+    "coordinates": [52.377874, 4.898265]
+  },
+  {
+    "id": "lm_014",
+    "name": "Harbour crane",
+    "category": "culture",
+    "coordinates": [52.358321, 4.896695]
+  },
+  {
+    "id": "lm_015",
+    "name": "Cheese weigh house",
+    "category": "culture",
+    "coordinates": [52.37486, 4.905635]
+  },
+  {
+    "id": "lm_016",
+    "name": "Botanical glasshouse",
+    "category": "park",
+    "coordinates": [52.370009, 4.896414]
+  },
+  {
+    "id": "lm_017",
+    "name": "Music hall",
+    "category": "culture",
+    "coordinates": [52.378389, 4.877663]
+  },
+  {
+    "id": "lm_018",
+    "name": "Lock keeper's cottage",
+    "category": "culture",
+    "coordinates": [52.360696, 4.89164]
+  },
+  {
+    "id": "lm_019",
+    "name": "Observatory deck",
+    "category": "culture",
+    "coordinates": [52.366652, 4.905059]
+  },
+  {
+    "id": "lm_020",
+    "name": "Brewery yard",
+    "category": "shop",
+    "coordinates": [52.376929, 4.900254]
+  },
+  {
+    "id": "lm_021",
+    "name": "Swing bridge 4",
+    "category": "bridge",
+    "coordinates": [52.376269, 4.897071]
+  },
+  {
+    "id": "lm_022",
+    "name": "Skate park",
+    "category": "park",
+    "coordinates": [52.359988, 4.908076]
+  },
+  {
+    "id": "lm_023",
+    "name": "Herring cart",
+    "category": "shop",
+    "coordinates": [52.368188, 4.896502]
+  },
+  {
+    "id": "lm_024",
+    "name": "Puppet theatre",
+    "category": "culture",
+    "coordinates": [52.368052, 4.912251]
+  },
+  {
+    "id": "lm_025",
+    "name": "Carillon tower",
+    "category": "culture",
+    "coordinates": [52.36154, 4.890739]
+  },
+  {
+    "id": "lm_026",
+    "name": "Houseboat museum",
+    "category": "culture",
+    "coordinates": [52.373543, 4.900867]
+  },
+  {
+    "id": "lm_027",
+    "name": "Canal-side cafe",
+    "category": "shop",
+    "coordinates": [52.369275, 4.878117]
+  },
+  {
+    "id": "lm_028",
+    "name": "Art school",
+    "category": "culture",
+    "coordinates": [52.368455, 4.881036]
+  },
+  {
+    "id": "lm_029",
+    "name": "Fish market",
+    "category": "shop",
+    "coordinates": [52.372386, 4.887802]
+  },
+  {
+    "id": "lm_030",
+    "name": "City archive",
+    "category": "culture",
+    "coordinates": [52.356638, 4.904419]
+  }
+]

@@ -1,0 +1,83 @@
+diff --git a/bikemap/cli.py b/bikemap/cli.py
+index eb0f3aa..49348d8 100644
+--- a/bikemap/cli.py
++++ b/bikemap/cli.py
+@@ -19,6 +19,9 @@ def build_parser() -> argparse.ArgumentParser:
+                         help="API key (env BIKEMAP_API_KEY)")
+     sub = parser.add_subparsers(dest="command", required=True)
+     sub.add_parser("health", help="check that the API is reachable")
++
++    summary = sub.add_parser("summary", help="print a short description of a ride file")
++    summary.add_argument("ride")
+     return parser
+ 
+ 
+@@ -29,7 +32,15 @@ def cmd_health(args: argparse.Namespace) -> int:
+     return 0
+ 
+ 
+-COMMANDS = {"health": cmd_health}
++def cmd_summary(args: argparse.Namespace) -> int:
++    from .ride import load_ride, summary_lines
++
++    for line in summary_lines(load_ride(args.ride)):
++        print(line)
++    return 0
++
++
++COMMANDS = {"health": cmd_health, "summary": cmd_summary}
+ 
+ 
+ def main(argv: list[str] | None = None) -> int:
+diff --git a/bikemap/ride.py b/bikemap/ride.py
+new file mode 100644
+index 0000000..8fbd468
+--- /dev/null
++++ b/bikemap/ride.py
+@@ -0,0 +1,46 @@
++"""Read Trailhead ride exports (GeoJSON, see DOCS.md "Ride files")."""
++from __future__ import annotations
++
++import json
++from pathlib import Path
++
++from .models import Ride, TrackPoint
++from .timefmt import parse_utc
++
++
++def _track_feature(doc: dict) -> dict:
++    if doc.get("type") == "Feature":
++        return doc
++    for feature in doc.get("features", []):
++        if feature.get("geometry", {}).get("type") == "LineString":
++            return feature
++    raise ValueError("no LineString feature in ride file")
++
++
++def load_ride(path) -> Ride:
++    doc = json.loads(Path(path).read_text(encoding="utf-8"))
++    feature = _track_feature(doc)
++    props = feature.get("properties") or {}
++    coords = feature["geometry"]["coordinates"]
++    times = props.get("times") or []
++    points = []
++    for i, position in enumerate(coords):
++        lon, lat = float(position[0]), float(position[1])  # GeoJSON order: lon, lat
++        ele = float(position[2]) if len(position) > 2 else None
++        stamp = times[i] if i < len(times) else None
++        points.append(TrackPoint(lat=lat, lon=lon, time=parse_utc(stamp) if stamp else None, ele=ele))
++    return Ride(name=props.get("name", ""), points=points)
++
++
++def summary_lines(ride: Ride) -> list[str]:
++    from .geo import bounding_box
++
++    first, last = ride.points[0], ride.points[-1]
++    box = bounding_box((p.lat, p.lon) for p in ride.points)
++    return [
++        f"name: {ride.name}",
++        f"points: {len(ride.points)}",
++        f"start: {first.lat:.6f},{first.lon:.6f}",
++        f"end: {last.lat:.6f},{last.lon:.6f}",
++        "bbox: " + ",".join(f"{v:.6f}" for v in box),
++    ]

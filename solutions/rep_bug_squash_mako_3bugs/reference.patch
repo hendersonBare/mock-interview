@@ -1,0 +1,43 @@
+diff --git a/mako/_ast_util.py b/mako/_ast_util.py
+index fc077f2..385d7a0 100644
+--- a/mako/_ast_util.py
++++ b/mako/_ast_util.py
+@@ -524,6 +524,9 @@ class SourceGenerator(NodeVisitor):
+     def visit_NameConstant(self, node):
+         self.write(str(node.value))
+ 
++    def visit_arg(self, node):
++        self.write(node.arg)
++
+     def visit_Str(self, node):
+         self.write(repr(node.s))
+ 
+diff --git a/mako/codegen.py b/mako/codegen.py
+index b0c6cf1..b5293f4 100644
+--- a/mako/codegen.py
++++ b/mako/codegen.py
+@@ -855,7 +855,10 @@ class _GenerateRenderMethod:
+ 
+             if (
+                 not children
+-                or all(isinstance(c, parsetree.ControlLine) for c in children)
++                or all(
++                    isinstance(c, (parsetree.Comment, parsetree.ControlLine))
++                    for c in children
++                )
+                 and all(
+                     (node.is_ternary(c.keyword) or c.isend)
+                     for c in children
+diff --git a/mako/lookup.py b/mako/lookup.py
+index 548b227..fae03af 100644
+--- a/mako/lookup.py
++++ b/mako/lookup.py
+@@ -247,7 +247,7 @@ class TemplateLookup(TemplateCollection):
+                 # on POSIX and cannot be used.
+                 dir_ = dir_.replace(os.path.sep, posixpath.sep)
+                 srcfile = posixpath.normpath(posixpath.join(dir_, u))
+-                if os.path.exists(srcfile):
++                if os.path.isfile(srcfile):
+                     return self._load(srcfile, uri)
+             else:
+                 raise exceptions.TopLevelLookupException(

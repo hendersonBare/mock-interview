@@ -1,0 +1,6 @@
+{
+  "faults": [
+    {"method": "POST", "path": "/v1/render", "status": 503, "times": 1, "message": "Renderer busy."},
+    {"method": "POST", "path": "/v1/render", "after": 2, "status": 500, "times": 2}
+  ]
+}
