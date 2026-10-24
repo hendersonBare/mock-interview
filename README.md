@@ -19,38 +19,17 @@ There are AI generated notes included for you in the solutions folder. I won't r
 > **Candidate:** stay out of `solutions/` until both rounds are graded.
 
 ---
-
-## 1. Stripe's interview process
-
-1. **Recruiter screen**
-2. **Technical team screen** (~60 min): was a multi part coding problem, easy in terms of algorithmic difficulty. completed 3/4 parts and was advanced to VO.
-3. **Virtual onsite**, 3 rounds 60 minutes each:
-   - **Bug Squash (a.k.a. Bug Bash):** you get a real, unfamiliar codebase (often an open-source
-     library) with failing tests and/or bug reports. You reproduce, localize, fix and verify,
-     talking it through with the interviewer. There are often several bugs in unrelated areas.
-     Docs and the internet are allowed.
-   - **Integration:** you build a feature against an unfamiliar HTTP API, working from its docs,
-     inside an existing small codebase. The spec arrives in parts and most people finish about
-     three. The usual skills tested are auth, pagination, error handling and retries, data
-     transformation, and reading the docs carefully. Internet is allowed, AI is not.
-   - **AI Programming Exercise** (their first year doing this, new grad candidates only I think): a coding round done *with* an AI assistant. It tests how well you steer, review and correct AI output. Should be pretty easy.
-4. **Hiring Manager Chat** deep dive on past projects, ownership,
-     collaboration, and Stripe's operating principles.
-
-The coding rounds are known for being **practical rather than LeetCode-style**
-
-## 2. Why these two problems
+## Why these two problems
 
 **Bug Squash → Mako (sqlalchemy/mako, tag `rel_1_3_12`).**
 - It's a real, idiomatic open-source codebase: lexer, parse tree, code generator, runtime and
-  template lookup, with a 517-test upstream suite. That matches the reports of Stripe using
-  real open-source projects rather than toy code.
+  template lookup, with a 517-test upstream suite.
 - It has **three bugs in three unrelated subsystems** (AST regeneration, filesystem lookup,
   control-block codegen), each written up as a user report in `ISSUE.md`. Candidates often
   report "there were three issues", so it also tests prioritization under time pressure.
 
 **Integration → BikeMap.**
-- This is the **most frequently described Stripe integration problem shape**: read a bike ride
+- This is the **most frequently described integration problem shape**: read a bike ride
   from a GeoJSON file, call an authenticated map-rendering API and save the image, add
   start/end markers and alternating segment colors, find the nearest landmark to each point
   (paginated API), then compute elapsed time and speed.
