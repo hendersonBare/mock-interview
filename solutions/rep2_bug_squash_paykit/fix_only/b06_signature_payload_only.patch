@@ -1,0 +1,16 @@
+diff --git a/paykit/webhooks.py b/paykit/webhooks.py
+index 2d04685..25e7001 100644
+--- a/paykit/webhooks.py
++++ b/paykit/webhooks.py
+@@ -42,7 +42,10 @@ def verify_signature(payload, header, secret, now=None):
+     now = time.time() if now is None else now
+     if abs(now - timestamp) > TOLERANCE_SECONDS:
+         raise SignatureError("timestamp outside tolerance")
+-    expected = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
++    signed_payload = f"{timestamp}.{payload}"
++    expected = hmac.new(
++        secret.encode(), signed_payload.encode(), hashlib.sha256
++    ).hexdigest()
+     if not hmac.compare_digest(expected, signature):
+         raise SignatureError("signature mismatch")
+     return json.loads(payload)

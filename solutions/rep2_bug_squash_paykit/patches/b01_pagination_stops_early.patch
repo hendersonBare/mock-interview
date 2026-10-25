@@ -1,0 +1,10 @@
+diff --git a/paykit/gateway.py b/paykit/gateway.py
+index fa9b035..0181b4f 100644
+--- a/paykit/gateway.py
++++ b/paykit/gateway.py
+@@ -90,4 +90,4 @@ class PaymentGateway:
+             if not page["has_more"]:
+                 break
+             query["starting_after"] = page["data"][-1]["id"]
+-        return charges
++            return charges

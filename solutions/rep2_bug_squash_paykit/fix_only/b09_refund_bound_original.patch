@@ -1,0 +1,14 @@
+diff --git a/paykit/ledger.py b/paykit/ledger.py
+index c38bda8..38d9f89 100644
+--- a/paykit/ledger.py
++++ b/paykit/ledger.py
+@@ -34,7 +34,8 @@ class Ledger:
+     def can_refund(self, charge_id, amount):
+         """True when ``amount`` can still be refunded on the charge."""
+         charge = self.get(charge_id)
+-        return 0 < amount <= charge.amount
++        remaining = charge.amount - charge.refunded
++        return 0 < amount <= remaining
+ 
+     def refund(self, charge_id, amount):
+         """Refund part of a charge and return the new refunded total."""

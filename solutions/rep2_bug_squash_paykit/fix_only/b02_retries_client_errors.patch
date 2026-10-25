@@ -1,0 +1,13 @@
+diff --git a/paykit/gateway.py b/paykit/gateway.py
+index 8a75a57..9e4447f 100644
+--- a/paykit/gateway.py
++++ b/paykit/gateway.py
+@@ -64,7 +64,7 @@ class PaymentGateway:
+             try:
+                 return self._do_request(method, path, body, idempotency_key)
+             except GatewayError as exc:
+-                if attempt == MAX_ATTEMPTS:
++                if exc.status not in RETRYABLE_STATUS or attempt == MAX_ATTEMPTS:
+                     raise
+ 
+     def create_charge(self, amount, currency, source="tok_visa", description=None):

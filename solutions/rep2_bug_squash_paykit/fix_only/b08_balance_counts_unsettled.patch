@@ -1,0 +1,13 @@
+diff --git a/paykit/ledger.py b/paykit/ledger.py
+index c38bda8..977f631 100644
+--- a/paykit/ledger.py
++++ b/paykit/ledger.py
+@@ -28,7 +28,7 @@ class Ledger:
+         return sum(
+             charge.amount - charge.refunded
+             for charge in self._charges.values()
+-            if charge.currency == currency
++            if charge.status == "succeeded" and charge.currency == currency
+         )
+ 
+     def can_refund(self, charge_id, amount):

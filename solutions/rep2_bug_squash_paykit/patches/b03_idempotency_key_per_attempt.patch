@@ -1,0 +1,14 @@
+diff --git a/paykit/gateway.py b/paykit/gateway.py
+index fa9b035..6b4a873 100644
+--- a/paykit/gateway.py
++++ b/paykit/gateway.py
+@@ -59,8 +59,8 @@ class PaymentGateway:
+         POST requests carry an Idempotency-Key so the gateway can recognise a retry
+         of a request it already processed.
+         """
+-        idempotency_key = new_idempotency_key() if method == "POST" else None
+         for attempt in range(1, MAX_ATTEMPTS + 1):
++            idempotency_key = new_idempotency_key() if method == "POST" else None
+             try:
+                 return self._do_request(method, path, body, idempotency_key)
+             except GatewayError as exc:

@@ -1,0 +1,7 @@
+[
+  {"id": "ch_1001", "amount": 2500, "currency": "usd", "status": "succeeded", "refunded": 0},
+  {"id": "ch_1002", "amount": 1200, "currency": "eur", "status": "succeeded", "refunded": 200},
+  {"id": "ch_1003", "amount": 980, "currency": "usd", "status": "failed", "refunded": 0},
+  {"id": "ch_1004", "amount": 4500, "currency": "jpy", "status": "pending", "refunded": 0},
+  {"id": "ch_1005", "amount": 7300, "currency": "usd", "status": "succeeded", "refunded": 7300}
+]

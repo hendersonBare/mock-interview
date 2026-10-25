@@ -1,0 +1,13 @@
+diff --git a/paykit/webhooks.py b/paykit/webhooks.py
+index 2d04685..279a970 100644
+--- a/paykit/webhooks.py
++++ b/paykit/webhooks.py
+@@ -54,7 +54,7 @@ def dispatch(event, handlers):
+     ``handlers`` maps event types (for example ``"charge.refunded"``) to callables
+     taking the event. Events without a handler are ignored and return None.
+     """
+-    handler = handlers.get(event.get("event_type"))
++    handler = handlers.get(event.get("type"))
+     if handler is None:
+         return None
+     return handler(event)

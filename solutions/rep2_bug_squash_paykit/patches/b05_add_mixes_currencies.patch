@@ -1,0 +1,13 @@
+diff --git a/paykit/money.py b/paykit/money.py
+index 6bb36f8..81e60b1 100644
+--- a/paykit/money.py
++++ b/paykit/money.py
+@@ -54,8 +54,6 @@ class Money:
+     def __add__(self, other):
+         if not isinstance(other, Money):
+             return NotImplemented
+-        if other.currency != self.currency:
+-            raise ValueError(f"cannot add {other.currency} to {self.currency}")
+         return Money(self.minor_units + other.minor_units, self.currency)
+ 
+     def convert(self, to_currency, rates):

@@ -1,0 +1,101 @@
+diff --git a/paykit/gateway.py b/paykit/gateway.py
+index 8a75a57..fa9b035 100644
+--- a/paykit/gateway.py
++++ b/paykit/gateway.py
+@@ -59,12 +59,12 @@ class PaymentGateway:
+         POST requests carry an Idempotency-Key so the gateway can recognise a retry
+         of a request it already processed.
+         """
++        idempotency_key = new_idempotency_key() if method == "POST" else None
+         for attempt in range(1, MAX_ATTEMPTS + 1):
+-            idempotency_key = new_idempotency_key() if method == "POST" else None
+             try:
+                 return self._do_request(method, path, body, idempotency_key)
+             except GatewayError as exc:
+-                if attempt == MAX_ATTEMPTS:
++                if exc.status not in RETRYABLE_STATUS or attempt == MAX_ATTEMPTS:
+                     raise
+ 
+     def create_charge(self, amount, currency, source="tok_visa", description=None):
+@@ -90,4 +90,4 @@ class PaymentGateway:
+             if not page["has_more"]:
+                 break
+             query["starting_after"] = page["data"][-1]["id"]
+-            return charges
++        return charges
+diff --git a/paykit/ledger.py b/paykit/ledger.py
+index c38bda8..a10fc14 100644
+--- a/paykit/ledger.py
++++ b/paykit/ledger.py
+@@ -28,16 +28,19 @@ class Ledger:
+         return sum(
+             charge.amount - charge.refunded
+             for charge in self._charges.values()
+-            if charge.currency == currency
++            if charge.status == "succeeded" and charge.currency == currency
+         )
+ 
+     def can_refund(self, charge_id, amount):
+         """True when ``amount`` can still be refunded on the charge."""
+         charge = self.get(charge_id)
+-        return 0 < amount <= charge.amount
++        remaining = charge.amount - charge.refunded
++        return 0 < amount <= remaining
+ 
+     def refund(self, charge_id, amount):
+         """Refund part of a charge and return the new refunded total."""
++        if not self.can_refund(charge_id, amount):
++            raise ValueError(f"cannot refund {amount} on {charge_id}")
+         charge = self.get(charge_id)
+         charge.refunded += amount
+         return charge.refunded
+diff --git a/paykit/money.py b/paykit/money.py
+index 33ff7ef..6bb36f8 100644
+--- a/paykit/money.py
++++ b/paykit/money.py
+@@ -54,6 +54,8 @@ class Money:
+     def __add__(self, other):
+         if not isinstance(other, Money):
+             return NotImplemented
++        if other.currency != self.currency:
++            raise ValueError(f"cannot add {other.currency} to {self.currency}")
+         return Money(self.minor_units + other.minor_units, self.currency)
+ 
+     def convert(self, to_currency, rates):
+@@ -64,8 +66,9 @@ class Money:
+         to_currency = to_currency.lower()
+         if to_currency not in EXPONENT:
+             raise ValueError(f"unsupported currency: {to_currency!r}")
+-        usd = Decimal(self.minor_units) / rate_for(rates, self.currency)
+-        minor = usd * rate_for(rates, to_currency)
++        usd = self.to_decimal() / rate_for(rates, self.currency)
++        amount = usd * rate_for(rates, to_currency)
++        minor = amount.scaleb(EXPONENT[to_currency])
+         return Money(
+             int(minor.quantize(Decimal(1), rounding=ROUND_HALF_UP)), to_currency
+         )
+diff --git a/paykit/webhooks.py b/paykit/webhooks.py
+index 2d04685..5173108 100644
+--- a/paykit/webhooks.py
++++ b/paykit/webhooks.py
+@@ -42,7 +42,10 @@ def verify_signature(payload, header, secret, now=None):
+     now = time.time() if now is None else now
+     if abs(now - timestamp) > TOLERANCE_SECONDS:
+         raise SignatureError("timestamp outside tolerance")
+-    expected = hmac.new(secret.encode(), payload.encode(), hashlib.sha256).hexdigest()
++    signed_payload = f"{timestamp}.{payload}"
++    expected = hmac.new(
++        secret.encode(), signed_payload.encode(), hashlib.sha256
++    ).hexdigest()
+     if not hmac.compare_digest(expected, signature):
+         raise SignatureError("signature mismatch")
+     return json.loads(payload)
+@@ -54,7 +57,7 @@ def dispatch(event, handlers):
+     ``handlers`` maps event types (for example ``"charge.refunded"``) to callables
+     taking the event. Events without a handler are ignored and return None.
+     """
+-    handler = handlers.get(event.get("event_type"))
++    handler = handlers.get(event.get("type"))
+     if handler is None:
+         return None
+     return handler(event)

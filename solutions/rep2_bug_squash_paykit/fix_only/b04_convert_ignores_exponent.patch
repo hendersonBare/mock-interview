@@ -1,0 +1,16 @@
+diff --git a/paykit/money.py b/paykit/money.py
+index 33ff7ef..81e60b1 100644
+--- a/paykit/money.py
++++ b/paykit/money.py
+@@ -64,8 +64,9 @@ class Money:
+         to_currency = to_currency.lower()
+         if to_currency not in EXPONENT:
+             raise ValueError(f"unsupported currency: {to_currency!r}")
+-        usd = Decimal(self.minor_units) / rate_for(rates, self.currency)
+-        minor = usd * rate_for(rates, to_currency)
++        usd = self.to_decimal() / rate_for(rates, self.currency)
++        amount = usd * rate_for(rates, to_currency)
++        minor = amount.scaleb(EXPONENT[to_currency])
+         return Money(
+             int(minor.quantize(Decimal(1), rounding=ROUND_HALF_UP)), to_currency
+         )
