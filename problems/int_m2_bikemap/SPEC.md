@@ -5,7 +5,7 @@
 
 Riders upload rides recorded on their Trailhead bike computers and want a picture of
 the route plus a few facts about it. Pathfinder (see `DOCS.md`) renders maps and knows
-about landmarks. Your job is to add the commands that turn a ride file into those
+about landmarks. Your job is to add the functions that turn a ride file into those
 outputs.
 
 The spec has five parts, all listed below. Work through them in order and finish (or
@@ -29,13 +29,14 @@ It reads a ride file (format in `DOCS.md`, "Ride files") and returns a
 - `ele`: the elevation in metres (float) or `None` when the position has none,
 - `time`: an aware UTC `datetime`, or `None` when the timestamp is `null`.
 
-Add a `summary` command:
+Also add to `bikemap/ride.py`:
 
-```
-python -m bikemap summary data/ride_canal_loop.geojson
+```python
+def summary(ride) -> str:
+    ...
 ```
 
-It prints exactly five lines:
+It returns exactly five lines joined with `\n` (no trailing newline):
 
 ```
 name: <name>
@@ -47,7 +48,7 @@ bbox: <min_lat>,<min_lon>,<max_lat>,<max_lon>
 
 `start` is the first point, `end` the last one, and `bbox` the bounding box of all
 points. Every coordinate is written with exactly 6 digits after the decimal point
-(`52.379185`). `bikemap.cli.main(argv)` must run the same command and return 0.
+(`52.379185`).
 
 Example (made-up ride):
 
@@ -68,6 +69,9 @@ def render_ride(ride, out_path, *, base_url, api_key, width=640, height=480) -> 
     ...
 ```
 
+The repository has no HTTP client code: write the call yourself. `requests` is installed
+(`requirements.txt`); the standard library's `urllib.request` works too.
+
 It sends **one** `POST /v1/render` request (see `DOCS.md`) that draws the ride's
 track as a single path through all of its points, in file order, using the API's
 default color and line width, with no markers, at `width` x `height` pixels. It
@@ -75,25 +79,17 @@ writes the response body to `out_path` byte for byte and returns the render id f
 the `X-Render-Id` response header.
 
 If the API answers with an error status, raise `bikemap.errors.ApiError` carrying that
-status and do not create or overwrite `out_path`. A `bikemap.errors.TransportError`
-(no response) may propagate.
+status (and the error message from the body when there is one). If no response arrives
+(connection refused, timeout), raise `bikemap.errors.TransportError`. In both cases do not
+create or overwrite `out_path`.
 
-Add a `render` command:
-
-```
-python -m bikemap [--base-url URL] [--api-key KEY] render RIDE --out FILE [--width W] [--height H]
-```
-
-It prints the render id on one line and exits with status 0. On an API or transport
-error it prints a message to stderr and exits with status 1. `--base-url` and
-`--api-key` default to `BIKEMAP_BASE_URL` / `BIKEMAP_API_KEY`.
-
-Open the PNG you get. Does the map look like the ride?
+Run it against the local API (`python -m mock_map`) from a Python shell or a small script,
+then open the PNG you get. Does the map look like the ride?
 
 ## Part 3: annotate the map
 
-Add a keyword argument `annotate=False` to `render_ride` and a `--annotate` flag to
-the `render` command. When it is set, the single render request must also:
+Add a keyword argument `annotate=False` to `render_ride`. When it is set, the single
+render request must also:
 
 - color the track segments alternately: segment `k` (from point `k` to point `k+1`,
   counting from 0) is `#e4572e` when `k` is even and `#2e86ab` when `k` is odd,
@@ -106,7 +102,7 @@ The renderer is now sometimes busy. Retry a render request that fails with `500`
 `502`, `503` or `504`, or that gets no response, making up to **3 attempts** in total
 (the first try plus 2 retries) and waiting at most 0.5 s between attempts. Never retry
 `4xx` responses. When every attempt fails, behave as in Part 2 (raise, no file
-written; the command exits with status 1).
+written).
 
 Try it with `python -m mock_map --scenario scenarios/part3.json`.
 
@@ -131,16 +127,17 @@ file order, finds the nearest landmark by haversine distance (see "Distances" in
 | `landmark_name` | its name |
 | `distance_m` | distance in metres rounded to 1 decimal, `round(d, 1)` (float) |
 
-Add a `landmarks` command:
+Also add to `bikemap/landmarks.py`:
 
-```
-python -m bikemap [--base-url URL] [--api-key KEY] landmarks RIDE --out FILE
+```python
+def export_landmarks(ride, out_path, *, base_url, api_key, timeout=2.0) -> None:
+    ...
 ```
 
-It writes a CSV file (header line first, `\n` line endings) with the columns
+It writes the nearest landmarks to a CSV file (header line first, `\n` line endings) with the columns
 `point_index,lat,lon,landmark_id,landmark_name,distance_m`, one row per point in file
 order; `lat` and `lon` are the track point's position with 6 decimals, `distance_m`
-has 1 decimal. It exits with status 0. Note: Python's `csv.writer` ends rows with `\r\n`
+has 1 decimal. Note: Python's `csv.writer` ends rows with `\r\n`
 by default; pass `lineterminator="\n"`.
 
 ### API errors
@@ -148,8 +145,7 @@ by default; pass `lineterminator="\n"`.
 - Retry a landmarks request that fails with `500`, `502`, `503` or `504`, or that gets
   no response within `timeout` seconds, making up to **3 attempts** in total and
   waiting at most 0.5 s between attempts. Never retry `4xx` responses. If a page still
-  cannot be fetched, raise a `bikemap.errors.BikemapError` subclass (the command exits
-  with status 1).
+  cannot be fetched, raise a `bikemap.errors.BikemapError` subclass.
 - Skip unusable landmark records. A record is usable when `id` is a non-empty string,
   `name` is a string, and `coordinates` is a list of exactly two numbers forming a
   valid position (see "Conventions" in `DOCS.md`). JSON `true`/`false` are not numbers;
@@ -194,14 +190,5 @@ must not fail on them. It returns a dict with exactly these keys:
 Compute speeds from the unrounded distance and time. With fewer than two usable
 points (or zero elapsed time) the distance, time and speed values that cannot be
 computed are `0.0`.
-
-Add a `stats` command:
-
-```
-python -m bikemap stats RIDE
-```
-
-It prints the dict as JSON (`json.dumps(result, indent=2, sort_keys=True)`) and exits
-with status 0.
 
 `data/ride_rough_signal.geojson` is a ride with glitches.

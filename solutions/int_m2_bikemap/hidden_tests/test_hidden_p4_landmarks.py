@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from hidden_bike_support import (HERE, KEY, RIDE, WORKDIR, haversine, landmark_gets, load, server,
+from hidden_bike_support import (HERE, KEY, WORKDIR, haversine, landmark_gets, load, server,
                                  write_ride)
 
 KEYS = {"point_index", "landmark_id", "landmark_name", "distance_m"}
@@ -117,11 +117,11 @@ def test_client_errors_are_not_retried():
         assert len(landmark_gets(api)) == 1
 
 
-def test_landmarks_command(tmp_path):
-    from bikemap.cli import main
+def test_export_landmarks_csv(tmp_path):
+    from bikemap.landmarks import export_landmarks
     out = tmp_path / "near.csv"
     with server() as api:
-        assert main(["--base-url", api.url, "--api-key", KEY, "landmarks", str(RIDE), "--out", str(out)]) == 0
+        assert export_landmarks(load(), out, base_url=api.url, api_key=KEY) is None
         rows = nearest(api)
     lines = out.read_text().split("\n")
     assert lines[0] == "point_index,lat,lon,landmark_id,landmark_name,distance_m"

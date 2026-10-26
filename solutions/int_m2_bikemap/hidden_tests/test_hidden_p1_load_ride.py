@@ -37,10 +37,13 @@ def test_null_time_becomes_none(tmp_path):
     assert (ride.points[1].lat, ride.points[1].lon, ride.points[1].ele) == (51.505, -0.11, None)
 
 
-def test_summary_command(capsys):
-    from bikemap.cli import main
-    assert main(["summary", str(RIDE)]) == 0
-    assert capsys.readouterr().out.splitlines() == [
+def summary_of(path):
+    from bikemap.ride import summary
+    return summary(load(path))
+
+
+def test_summary():
+    assert summary_of(RIDE).split("\n") == [
         "name: Canal loop",
         "points: 49",
         "start: 52.379185,4.900061",
@@ -49,13 +52,11 @@ def test_summary_command(capsys):
     ]
 
 
-def test_summary_spec_example(tmp_path, capsys):
-    from bikemap.cli import main
+def test_summary_spec_example(tmp_path):
     path = write_ride(tmp_path, [[-0.12, 51.5], [-0.11, 51.505, 3.0], [-0.1, 51.51]],
                       ["2026-01-01T08:00:00Z", "2026-01-01T08:01:00Z", "2026-01-01T08:02:00Z"],
                       name="Morning spin")
-    assert main(["summary", str(path)]) == 0
-    assert capsys.readouterr().out.splitlines() == [
+    assert summary_of(path).split("\n") == [
         "name: Morning spin",
         "points: 3",
         "start: 51.500000,-0.120000",
@@ -64,10 +65,9 @@ def test_summary_spec_example(tmp_path, capsys):
     ]
 
 
-def test_bbox_uses_extremes_not_endpoints(tmp_path, capsys):
-    from bikemap.cli import main
+def test_bbox_uses_extremes_not_endpoints(tmp_path):
     path = write_ride(tmp_path, [[5.0, 50.0], [6.5, 49.0], [4.0, 51.25], [5.5, 50.5]],
                       ["2026-01-01T08:00:00Z"] * 4, name="Zigzag")
-    assert main(["summary", str(path)]) == 0
-    lines = capsys.readouterr().out.splitlines()
+    lines = summary_of(path).split("\n")
+    assert len(lines) == 5
     assert lines[-1] == "bbox: 49.000000,4.000000,51.250000,6.500000"

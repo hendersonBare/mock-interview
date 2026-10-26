@@ -1,37 +1,6 @@
-diff --git a/bikemap/cli.py b/bikemap/cli.py
-index eb0f3aa..49348d8 100644
---- a/bikemap/cli.py
-+++ b/bikemap/cli.py
-@@ -19,6 +19,9 @@ def build_parser() -> argparse.ArgumentParser:
-                         help="API key (env BIKEMAP_API_KEY)")
-     sub = parser.add_subparsers(dest="command", required=True)
-     sub.add_parser("health", help="check that the API is reachable")
-+
-+    summary = sub.add_parser("summary", help="print a short description of a ride file")
-+    summary.add_argument("ride")
-     return parser
- 
- 
-@@ -29,7 +32,15 @@ def cmd_health(args: argparse.Namespace) -> int:
-     return 0
- 
- 
--COMMANDS = {"health": cmd_health}
-+def cmd_summary(args: argparse.Namespace) -> int:
-+    from .ride import load_ride, summary_lines
-+
-+    for line in summary_lines(load_ride(args.ride)):
-+        print(line)
-+    return 0
-+
-+
-+COMMANDS = {"health": cmd_health, "summary": cmd_summary}
- 
- 
- def main(argv: list[str] | None = None) -> int:
 diff --git a/bikemap/ride.py b/bikemap/ride.py
 new file mode 100644
-index 0000000..8fbd468
+index 0000000..f279d65
 --- /dev/null
 +++ b/bikemap/ride.py
 @@ -0,0 +1,46 @@
@@ -69,15 +38,15 @@ index 0000000..8fbd468
 +    return Ride(name=props.get("name", ""), points=points)
 +
 +
-+def summary_lines(ride: Ride) -> list[str]:
++def summary(ride: Ride) -> str:
 +    from .geo import bounding_box
 +
 +    first, last = ride.points[0], ride.points[-1]
 +    box = bounding_box((p.lat, p.lon) for p in ride.points)
-+    return [
++    return "\n".join([
 +        f"name: {ride.name}",
 +        f"points: {len(ride.points)}",
 +        f"start: {first.lat:.6f},{first.lon:.6f}",
 +        f"end: {last.lat:.6f},{last.lon:.6f}",
 +        "bbox: " + ",".join(f"{v:.6f}" for v in box),
-+    ]
++    ])

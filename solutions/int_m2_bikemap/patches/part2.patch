@@ -1,62 +1,17 @@
-diff --git a/bikemap/cli.py b/bikemap/cli.py
-index eb0f3aa..564551b 100644
---- a/bikemap/cli.py
-+++ b/bikemap/cli.py
-@@ -19,6 +19,15 @@ def build_parser() -> argparse.ArgumentParser:
-                         help="API key (env BIKEMAP_API_KEY)")
-     sub = parser.add_subparsers(dest="command", required=True)
-     sub.add_parser("health", help="check that the API is reachable")
-+
-+    summary = sub.add_parser("summary", help="print a short description of a ride file")
-+    summary.add_argument("ride")
-+
-+    render = sub.add_parser("render", help="render a ride to a PNG file")
-+    render.add_argument("ride")
-+    render.add_argument("--out", required=True)
-+    render.add_argument("--width", type=int, default=640)
-+    render.add_argument("--height", type=int, default=480)
-     return parser
- 
- 
-@@ -29,7 +38,25 @@ def cmd_health(args: argparse.Namespace) -> int:
-     return 0
- 
- 
--COMMANDS = {"health": cmd_health}
-+def cmd_summary(args: argparse.Namespace) -> int:
-+    from .ride import load_ride, summary_lines
-+
-+    for line in summary_lines(load_ride(args.ride)):
-+        print(line)
-+    return 0
-+
-+
-+def cmd_render(args: argparse.Namespace) -> int:
-+    from .render import render_ride
-+    from .ride import load_ride
-+
-+    render_id = render_ride(load_ride(args.ride), args.out, base_url=args.base_url,
-+                            api_key=args.api_key or "", width=args.width, height=args.height)
-+    print(render_id)
-+    return 0
-+
-+
-+COMMANDS = {"health": cmd_health, "summary": cmd_summary, "render": cmd_render}
- 
- 
- def main(argv: list[str] | None = None) -> int:
 diff --git a/bikemap/render.py b/bikemap/render.py
 new file mode 100644
-index 0000000..e535f21
+index 0000000..7d89f94
 --- /dev/null
 +++ b/bikemap/render.py
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,37 @@
 +"""Render a ride with the Pathfinder render endpoint."""
 +from __future__ import annotations
 +
 +from pathlib import Path
 +
-+from . import http
++import requests
++
++from .errors import ApiError, TransportError
 +from .models import Ride
 +
 +
@@ -66,17 +21,29 @@ index 0000000..e535f21
 +    return {"width": width, "height": height, "paths": [{"points": points}]}
 +
 +
++def _api_error(response: requests.Response) -> ApiError:
++    try:
++        message = response.json().get("error", {}).get("message", "")
++    except (ValueError, AttributeError):
++        message = response.text[:200]
++    return ApiError(response.status_code, message)
++
++
 +def render_ride(ride: Ride, out_path, *, base_url: str, api_key: str,
 +                width: int = 640, height: int = 480) -> str:
 +    body = build_render_request(ride, width, height)
-+    response = http.send("POST", base_url.rstrip("/") + "/v1/render",
-+                         headers={"X-Api-Key": api_key}, json_body=body)
-+    response.raise_for_status()
-+    Path(out_path).write_bytes(response.body)
-+    return response.header("X-Render-Id", "")
++    try:
++        response = requests.post(base_url.rstrip("/") + "/v1/render",
++                                 headers={"X-Api-Key": api_key}, json=body, timeout=10)
++    except requests.RequestException as exc:
++        raise TransportError(f"POST /v1/render: {exc}") from exc
++    if not 200 <= response.status_code < 300:
++        raise _api_error(response)
++    Path(out_path).write_bytes(response.content)  # PNG bytes, not JSON
++    return response.headers.get("X-Render-Id", "")
 diff --git a/bikemap/ride.py b/bikemap/ride.py
 new file mode 100644
-index 0000000..8fbd468
+index 0000000..f279d65
 --- /dev/null
 +++ b/bikemap/ride.py
 @@ -0,0 +1,46 @@
@@ -114,15 +81,15 @@ index 0000000..8fbd468
 +    return Ride(name=props.get("name", ""), points=points)
 +
 +
-+def summary_lines(ride: Ride) -> list[str]:
++def summary(ride: Ride) -> str:
 +    from .geo import bounding_box
 +
 +    first, last = ride.points[0], ride.points[-1]
 +    box = bounding_box((p.lat, p.lon) for p in ride.points)
-+    return [
++    return "\n".join([
 +        f"name: {ride.name}",
 +        f"points: {len(ride.points)}",
 +        f"start: {first.lat:.6f},{first.lon:.6f}",
 +        f"end: {last.lat:.6f},{last.lon:.6f}",
 +        "bbox: " + ",".join(f"{v:.6f}" for v in box),
-+    ]
++    ])

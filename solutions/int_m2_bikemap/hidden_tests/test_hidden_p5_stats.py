@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 from hidden_bike_support import HERE, RIDE, haversine, write_ride
@@ -91,12 +89,3 @@ def test_too_few_usable_points(tmp_path):
     result = stats(write_ride(tmp_path, coords, ["2026-01-01T00:00:00Z", "2026-01-01T00:01:00Z"]))
     assert result == {"points": 2, "used_points": 1, "skipped_points": [1], "elapsed_s": 0.0,
                       "distance_m": 0.0, "avg_speed_kmh": 0.0, "max_speed_kmh": 0.0}
-
-
-def test_stats_command(tmp_path, capsys):
-    from bikemap.cli import main
-    path = HERE / "hidden_data" / "hidden_p5_rough_ride.geojson"
-    assert main(["stats", str(path)]) == 0
-    out = capsys.readouterr().out
-    assert json.loads(out) == stats(path)
-    assert out.strip() == json.dumps(stats(path), indent=2, sort_keys=True)

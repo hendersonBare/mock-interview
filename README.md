@@ -61,8 +61,9 @@ pip install -r requirements.txt
 python -m pytest -q                                    # Mako: expect 6 failed, 511 passed
 ```
 
-Same for BikeMap (`problems/int_m2_bikemap`, expect `45 passed`, since Part 1 is new code
-rather than failing tests).
+Same for BikeMap (`problems/int_m2_bikemap`, expect `39 passed`, since Part 1 is new code
+rather than failing tests). BikeMap has no CLI and no HTTP helper: the candidate writes the
+API calls with `requests`, like the real round.
 
 **Ground rules to give the candidate:**
 - Docs and the internet are fine. No AI assistants (matches reported Stripe rules for these

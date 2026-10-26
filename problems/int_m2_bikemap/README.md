@@ -14,8 +14,8 @@ Then read `SPEC.md`, `DOCS.md` and start working. Everything below runs inside `
 pytest -q                          # whole test suite
 pytest -q -x                       # stop at the first failure
 pytest -q --lf                     # rerun only the tests that failed last time
-pytest -q tests/test_cli.py        # one file
-pytest -q "tests/test_cli.py::test_health"
+pytest -q tests/test_geo.py        # one file
+pytest -q "tests/test_geo.py::test_zero_distance"
                                    # one test (copy ids from the failure output)
 pytest -q -k "some_name"           # tests whose names match
 pytest -q -s                       # show your print() output
@@ -36,7 +36,7 @@ More test and debugger tricks: `~/Desktop/Stripe/CHEATSHEET.md`.
 
 ## Goal
 
-You maintain `bikemap`, a small tool that turns rides recorded on bike computers into
+You maintain `bikemap`, a small Python library that turns rides recorded on bike computers into
 maps and statistics using the Pathfinder maps API. Read `DOCS.md` (the API and the
 ride file format) and `SPEC.md` (the task), then implement Part 1. Look at the raw
 data first (`data/ride_canal_loop.geojson`, a landmarks page from the API) before
@@ -44,7 +44,8 @@ writing code.
 
 Repository map:
 
-- `bikemap/` - the tool: models, geo helpers, timestamps, HTTP transport, PNG helpers, CLI
+- `bikemap/` - the library: models, geo helpers, timestamps, PNG helpers, error types
+  (there is no HTTP client code yet: you write the API calls)
 - `mock_map/` - local copy of the Pathfinder API (`python -m mock_map`)
 - `data/` - a recorded ride and the landmarks served by the local API
 - `scenarios/` - scenario files for the local API
@@ -62,11 +63,12 @@ pip install --no-index --find-links ~/Desktop/Stripe/wheelhouse -r requirements.
 python -m pytest -q
 ```
 
-Run the API and the tool in two terminals:
+Run the local API in one terminal and try calls from another (the health endpoint
+needs no key):
 
 ```
 python -m mock_map
-BIKEMAP_API_KEY=pk_test_pathfinder_51c0 python -m bikemap health
+curl http://127.0.0.1:8700/v1/health
 ```
 
 ## Time limit
@@ -91,8 +93,8 @@ before moving on.
 - Do not edit the existing tests. Add your own tests for the code you write.
 - All five parts are in `SPEC.md`. Do them in order and finish (or decide to stop)
   one part before starting the next.
-- Use only the standard library plus what `requirements.txt` lists (no imaging
-  libraries are needed: the API draws the image).
+- Use only the standard library plus what `requirements.txt` lists (`requests` and
+  `pytest`; no imaging libraries are needed: the API draws the image).
 - After the timer ends, grade your work with
   `~/Desktop/Stripe/keys/grade.sh int_m2_bikemap <part>` (the last part you worked on).
   Open the keys folder only after the timer ends.

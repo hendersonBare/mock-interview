@@ -1,7 +1,7 @@
 import pytest
 
-from hidden_bike_support import (KEY, RIDE, assert_same_positions, latlon_points, load, png_size,
-                                 posts, server, sha256)
+from hidden_bike_support import (KEY, assert_same_positions, closed_port, latlon_points, load,
+                                 png_size, posts, server, sha256)
 
 
 def render(api, out, **kw):
@@ -71,35 +71,10 @@ def test_error_does_not_overwrite_existing_file(tmp_path):
     assert out.read_bytes() == b"previous"
 
 
-def test_render_command(tmp_path, capsys):
-    from bikemap.cli import main
-    out = tmp_path / "cli.png"
-    with server() as api:
-        code = main(["--base-url", api.url, "--api-key", KEY, "render", str(RIDE), "--out", str(out),
-                     "--width", "400", "--height", "300"])
-        record = api.renders[-1]
-    assert code == 0
-    assert capsys.readouterr().out.strip() == record["render_id"]
-    assert sha256(out) == record["sha256"]
-    assert png_size(out) == (400, 300)
-
-
-def test_render_command_env_defaults(tmp_path, monkeypatch, capsys):
-    from bikemap.cli import main
-    out = tmp_path / "env.png"
-    with server() as api:
-        monkeypatch.setenv("BIKEMAP_BASE_URL", api.url)
-        monkeypatch.setenv("BIKEMAP_API_KEY", KEY)
-        assert main(["render", str(RIDE), "--out", str(out)]) == 0
-    assert png_size(out) == (640, 480)
-
-
-def test_render_command_failure_exits_one(tmp_path, capsys):
-    from bikemap.cli import main
-    out = tmp_path / "bad.png"
-    with server() as api:
-        code = main(["--base-url", api.url, "--api-key", "pk_test_wrong", "render", str(RIDE),
-                     "--out", str(out)])
-    assert code == 1
-    assert capsys.readouterr().err.strip()
+def test_unreachable_api_raises_transport_error(tmp_path):
+    from bikemap.errors import TransportError
+    from bikemap.render import render_ride
+    out = tmp_path / "ride.png"
+    with pytest.raises(TransportError):
+        render_ride(load(), out, base_url=f"http://127.0.0.1:{closed_port()}", api_key=KEY)
     assert not out.exists()

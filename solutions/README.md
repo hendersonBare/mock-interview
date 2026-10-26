@@ -12,11 +12,11 @@ solutions/
   int_m2_bikemap/
     KEY_SOLUTION.md              the trap, expected outputs per part, graded edge cases
     patches/part<k>.patch        reference solution after part k (reference.patch = part 5)
-    hidden_tests/                51 acceptance tests, split by part (p1..p5)
+    hidden_tests/                47 acceptance tests, split by part (p1..p5)
 ```
 
 Both reference solutions were checked against a fresh copy of `problems/`. Mako: 517 visible
-and 32 hidden tests pass. BikeMap: 50 visible and 51 hidden tests pass through Part 5.
+and 32 hidden tests pass. BikeMap: 44 visible and 47 hidden tests pass through Part 5.
 
 ## Bug Squash: Mako
 

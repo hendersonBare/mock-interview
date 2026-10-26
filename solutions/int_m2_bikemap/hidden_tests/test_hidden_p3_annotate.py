@@ -1,6 +1,6 @@
 import pytest
 
-from hidden_bike_support import (EVEN, KEY, ODD, RIDE, assert_same_positions, closed_port,
+from hidden_bike_support import (EVEN, KEY, ODD, assert_same_positions, closed_port,
                                  latlon_points, load, posts, server, sha256, write_ride)
 
 
@@ -43,18 +43,6 @@ def test_two_point_ride(tmp_path):
         drawn = api.renders[-1]["drawn"]
     assert [(s["from"], s["to"], s["color"]) for s in drawn["segments"]] == [
         ([52.37, 4.9], [52.38, 4.91], EVEN)]
-
-
-def test_annotate_flag(tmp_path, capsys):
-    from bikemap.cli import main
-    out = tmp_path / "cli.png"
-    with server() as api:
-        assert main(["--base-url", api.url, "--api-key", KEY, "render", str(RIDE), "--out", str(out),
-                     "--annotate"]) == 0
-        record = api.renders[-1]
-    assert capsys.readouterr().out.strip() == record["render_id"]
-    assert sha256(out) == record["sha256"]
-    assert {m["kind"] for m in record["drawn"]["markers"]} == {"start", "end"}
 
 
 @pytest.mark.parametrize("statuses", [[503], [500, 502], [504]])
